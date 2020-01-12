@@ -538,7 +538,7 @@ where p.peronsel_id=g.veren_id group by aders_il order by adet
 select * from peronsel , gorev (
 select  gorevid gid ,sum(maliyet) from  gorev g, isler i 
 where g.gorevid=i.gorevid  group by gorevid having  sum(maliyet)>100 ) gorevd
-) where gorevd.id=gorev.goreid and gorev.veren_id=peronsel_id
+) where gorevd.gid=gorev.grevid and gorev.geren_id=p.peronsel_id
 
 
 --d. Aldığı görevlerdeki işlerin toplam
