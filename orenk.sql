@@ -271,3 +271,27 @@ begin
 end;
   
 select * from kisi;
+-----------------------------------------------------------------------
+--Personellerin maaşının azalmasını engelleyen bir trigger yazınız.
+create or replace trigger personel_maas_kontorl
+before update of salary on kisi
+REFERENCING old as old new as new
+FOR EACH ROW
+begin 
+  if :new.salary<:old.salary then
+     raise_application_error(-20101,'maas azalamaz');
+  end if;
+end ;
+
+CREATE OR REPLACE TRIGGER PERSONEL_SAYI_KONTROL
+AFTER INSERT OR UPDATE ON kisi 
+REFERENCING old AS old new AS new
+FOR EACH ROW
+DECLARE
+    p_sayi NUMBER;
+BEGIN
+    p_sayi:=personel_pack.get_personel_sayi(:new.department_id);
+    IF (p_sayi>10) THEN
+        RAISE_APPLICATION_ERROR(-20101,'Birimlerde 10 kişiden fazla çalışamaz.');
+    END IF;
+END;
