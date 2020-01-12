@@ -204,7 +204,47 @@ begin
  close c_dprt;
  end;
  ----------------------------------------------
- --Personel adı,soyadi ve birimini bileşke kullanmadan yazdırınız.
+ create table kisi (select * from hr.employees)
+create or replace package per as
+ function get_peronsel_sayi(p_daprt_id in number) return number;
+ function get_peronsel_name(p_personel_id in number)  return varchar;
+ PROCEDURE maas_azalt;
+end per;
 
- 
-  
+create or replace  package body per as 
+   function get_peronsel_sayi(p_daprt_id in number) return number as
+   cursor c_peronel_sayi is 
+   select count(*) from hr.employees where department_id=p_daprt_id;
+   sounc number;
+   begin
+   open c_peronel_sayi;
+   fetch c_peronel_sayi into  sounc;
+   close c_peronel_sayi;
+   return sounc;
+end;
+  function get_peronsel_name(p_personel_id in number)  return varchar as
+   cursor c_per is select (FIRST_NAME ||'  '||LAST_NAME) from kisi where EMPLOYEE_ID=p_personel_id;
+   isim varchar(20);
+   begin
+   open c_per;
+   fetch c_per into isim;
+   close c_per;
+   return isim;
+end;
+  PROCEDURE maas_azalt is 
+  cursor c_emp is 
+  select * from kisi;
+  r_emp hr.employees%rowtype;
+  begin
+  open c_emp;
+  fetch c_emp into r_emp;
+  close c_emp;
+  update kisi set salary=salary*0.9
+  where employee_id=r_emp.employee_id;
+  commit;
+end;
+end per;
+select per.get_peronsel_sayi(d.department_id) from hr.departments d;
+select per.get_peronsel_name(k.employee_id) isimler from kisi k ;
+select * from kisi;
+
