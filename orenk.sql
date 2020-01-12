@@ -295,3 +295,285 @@ BEGIN
         RAISE_APPLICATION_ERROR(-20101,'Birimlerde 10 kişiden fazla çalışamaz.');
     END IF;
 END;
+----------------------------------------------------------------------------------
+-- 2. İstanbul’da yaşayan öğrencilerin aldığı derslerin isimlerini ANSI EQUI ve INNER bileşkeyle bulunuz. 
+
+select * from ogrenci o , ders s , not n where o.ogrenci_id=n.ogrenci_id
+ and 
+ n.ders_id=s.ders_id and
+ aders_il='istanbul'
+ 
+ 
+ select * from ogrenci o inner join ders_not using(ogrenci_id)
+ inner join ders using(ders_id) where aders_il='istanbul' 
+ 
+ -- BA notu 70-80 aralığındaysa kaç öğrencinin 2011 yılında herhangi bir dersten ‘BA’ aldığını bulunuz
+ 
+ select count(*) from  ogrenci o , not n , ders d 
+ where ( not between 70 AND 80 ) and yil='2011'  
+ 
+ select count(*) from  ogrenci where ogrenci_id in (
+    select ogrenci_id from not n , ders d where n.ders_id=d.ders_id
+   	 and yil='2011' and 
+	 n.not between 70 and 80  
+   ) 
+-- Hem Matematik hem fizik dersinde öğrencilerin ortalaması aynı olan illeri bulunuz.
+ select Adres_id from OGRENCI where ogrenci_id in (
+ select ogrenci_id from 
+ (select ogrenci_id,Avg(NOT) ortf from  ogrenci o , not n , ders d where o.ogrenci_id=n.ogrenci_id 
+ and n.ders_id=d.ders_id and n.ders_id='FIZ' GROUP BY ogrenci_id) fizik ,
+ (select ogrenci_id,Avg(NOT) ortm from  ogrenci o , not n , ders d where o.ogrenci_id=n.ogrenci_id 
+ and n.ders_id=d.ders_id and n.ders_id='MAT' GROUP BY ogrenci_id) Mat where fizik.ortf=Mat.ortm 
+ )
+ 
+ 
+ select aders_il,avg(not) from  ogrenci o , ders_not d 
+ where o.ogrenci_id=d.ogrenci_id and ders_id="MAT" GROUP BY aders_il
+ INTERSECT
+ select aders_il,avg(not) from  ogrenci o , ders d 
+ where o.ogrenci_id=d.ogrenci_id and ders_id="FIZ"
+ GROUP BY aders_il
+ 
+ 
+SELECT * FROM (SELECT adres_il,AVG(not) ortalama
+FROM öğrenci o, ders_not d
+WHERE o.öğrenci_id=d. öğrenci_id
+AND ders_id=’MAT’
+GROUP BY adres_il) mat_ort,
+(SELECT adres_il,AVG(not) ortalama
+FROM öğrenci o, ders_not d
+WHERE o.öğrenci_id=d. öğrenci_id
+AND ders_id=’FIZ’
+GROUP BY adres_il) fiz_ort
+WHERE mat_ort.adres_il=fiz_ort.adres_il
+AND mat_ort. Ortalama=fiz_ort. Ortalama
+
+--Hiç ders almayan öğrencilerin durumun “Pasif” olarak UPDATE ediniz.
+update ogrenci set durum = 'pastif' where ogrenci_id in(
+select ogrenci_id from ogrenci where ogrenci_id not in (
+select ogrenci_id from not ));
+
+
+-- 2. (18) İstanbul’da yaşayan ve avans kullanmış personellere ödenen toplam ücretleri personel
+--  bazında listeleyiniz.
+-- a. ANSI INNER Bileşke
+-- b. Klasik Bileşke
+
+SELECT sum(tutar) FROM PERSONEL P , MAAS M where p.personel_id= m.personel_id and  aders_il='istanbul' 
+and turu='avans' GROUP BY personel_id 
+select sum(tutar) from  PERSONEL P INNER JOIN MAAS M  USING (PERSONEL_ID) 
+where aders_il='istanbul' and turu='avans' GROUP BY personel_id 
+
+SELECT personel_id, SUM(maas)
+FROM personel p, maas m
+WHERE p.personel_id=m.personel_id
+ AND p.personel_id IN (SELECT personel_id FROM maas WHERE turu=’AVANS’)
+AND adres_id = ’İSTANBUL’
+GROUP BY personel_id
+
+--(15) Ücretine 2016 yılında zam almayan kişileri listeleyiniz. (İpucu: tuturı takip eden aylarda
+--hiç artmamış)
+select * from 
+(select * from maas where yil==2016) a ,
+(select * from maas where yil!=2016) b  where a.personel_id=b.personel_id and a.turu<>b.turu;
+
+ SELECT * FROM PERSONEL
+ WHERE personel_id NOT IN 
+ (SELECT * 
+ FROM MAAS m,MAAS s
+ WHERE m.personel_id=s.personel_id
+ AND s.tutar>m.tutar
+ AND s.ay_id>m.ay_id
+ AND s.yil=2016 AND s.turu='Maaş'
+ AND m.yil=2016 AND m.turu='Maaş');
+-- (15) İ.K’da çalışan ve 2016 yılında aldığı avansları aynı yıl içinde tümüyle ödeyen personelleri
+ -- SQL ile listeleyiniz.
+select * from 
+      ( select PERSONEL_ID,sum(tutar) toplam from  maas where PERSONEL_ID in (
+       select PERSONEL_ID from  PERSONEL where birim_id in  (
+       select birim_id from  birim_1 where birim_adi='I.K')) and turu='AVANS' and yil=2016 group by PERSONEL_ID) avans
+       ,
+       ( select PERSONEL_ID,sum(tutar) toplam from  maas where PERSONEL_ID in (
+       select PERSONEL_ID from  PERSONEL where birim_id in  (
+       select birim_id from  birim_1 where birim_adi='I.K')) and turu='odeme' and yil=2016 group by PERSONEL_ID) odeme
+       where avans.PERSONEL_ID=odeme.PERSONEL_ID and avans,toplam=odeme.toplam
+
+--  (10) Avans almasına rağmen hiç ödeme yapmayan personelleri listeleyiniz.(SQL küme operatörleri)
+SELECT * FROM personel WHERE personel_id IN
+(SELECT personel_id FROM maas WHERE turu='Avans')
+MINUS
+(SELECT personel_id FROM maas WHERE turu='Ödeme')
+
+--2. (10) “Ahmet Ak ” yönetimindeki “Açık” ambarlardaki malzeme hareketlerini malzeme
+-- sırasıyla SQL kullanarak listeleyiniz
+select * from hareket where ambar_id in (
+select ambar_ID from ambar where durum='acik' and SORUMLU_ID in (
+select personel_id from personel where Adi='ahmet' and Soyadi='ak'))
+order by hareket_no 
+
+  
+  
+select * 
+from personel pe, ambar am, hareket ha
+where pe.personel_id = am.sorumlu_id
+and am.sorumlu_id not in (select sorumlu_id 
+                            from ambar
+                            where am.durum = 'kapali')
+and am.ambar_id = ha.ambar_id
+and pe.adi ||' '||pe.SOYADI = 'ahmet ak'
+order by ha.hareket_no 
+
+--(25) İstanbul’da yaşayan kişilerin sorumlu olduğu ambarlardaki toplam giren ve çıkan
+-- malzeme sayısını bulunuz.
+select * from PERSONEL p , AMBAR buyukamber ,
+(select * from 
+(select h.ambar_id ambarg, count(*) Gikis from  ambar a , hareket h where a.ambar_id=h.ambar_id
+and turu='giris'  group by h.ambar_id  ) giris ,
+(select h.ambar_id ambarc , count(*) cikis from  ambar a , hareket h where a.ambar_id=h.ambar_id
+and turu='cikis'  group by h.ambar_id ) cikis 
+where giris.ambarg=cikis.ambarc) durum where 
+buyukamber.Ambar_id=durum.ambarg and buyukamber.Sorumlu_Id=p.Personel_id and ADRES_IL='istanbul';
+
+
+
+select * from HAREKET;
+select * 
+from personel pe,ambar am, (select gi.ambar_id, gi.girenMalzemeSayisi, ci.cikanMalzemeSayisi from
+                                (select ambar_id, count(*) girenMalzemeSayisi
+                                from hareket
+                                where turu = 'giris'
+                                group by ambar_id) gi,
+                                (select ambar_id, count(*) cikanMalzemeSayisi
+                                from hareket
+                                where turu = 'cikis'
+                                group by ambar_id) ci
+                            where gi.ambar_id= ci.ambar_id) so
+where am.ambar_id= so.ambar_id
+and pe.personel_id = am.sorumlu_id
+and ADRES_IL='istanbul'
+
+
+
+-- (15) Giren toplam malzeme miktarı, çıkan toplam malzeme miktarından fazla olan ambarların
+-- isimlerini bulunuz.
+
+select 	AMBAR_ADI from  AMBAR where Ambar_id in (
+select AMBARG  from 
+(select h.ambar_id ambarg, sum(toplam) toplamgiris from  ambar a , hareket h where a.ambar_id=h.ambar_id
+and turu='giris'  group by h.ambar_id ) giris ,
+(select h.ambar_id ambarc , sum(toplam) toplamcikis from  ambar a , hareket h where a.ambar_id=h.ambar_id
+and turu='cikis' group by h.ambar_id ) cikis 
+where giris.ambarg=cikis.ambarc and giris.toplamgiris>cikis.toplamcikis)
+
+select ambar_adi
+from ambar am,(select gi.ambar_id, gi.girenToplamMalzemeMiktari, ci.cikanToplamMalzemeMiktari 
+                from(select ambar_id, sum(toplam) girenToplamMalzemeMiktari
+                        from hareket
+                        where turu = 'giris'
+                        group by ambar_id) gi,
+                    (select ambar_id, sum(toplam) cikanToplamMalzemeMiktari
+                        from hareket
+                        where turu = 'cikis'
+                        group by ambar_id) ci
+                where gi.ambar_id= ci.ambar_id
+                and gi.girenToplamMalzemeMiktari > ci.cikanToplamMalzemeMiktari)sonuc
+where am.ambar_id = sonuc.ambar_id
+
+-- Tüm ambarlardaki toplam malzeme tutarını, giriş ve çıkış hareketleri arasındaki fark
+-- olacak şekilde update ediniz
+select girisid,  (cikis.toplams-giris.toplamg) giriş_ve_çıkış_hareketleri_arasındaki_fark   from 
+(select a.Ambar_Id girisid , sum(toplam) toplamg from  ambar a , hareket h where a.Ambar_Id=h.Ambar_Id 
+and turu='giris'  group by  a.Ambar_Id) giris 
+,
+(select a.Ambar_Id cikisid , sum(toplam) toplams from  ambar a , hareket h where a.Ambar_Id=h.Ambar_Id 
+and turu='cikis'  group by  a.Ambar_Id) cikis 
+where giris.girisid=cikis.cikisid 
+;
+
+
+update ambar am
+SET toplam_tutar = (select girenToplamMalzemeTutari - cikanToplamMalzemeTutari girenVeCikanToplamMalzemeFarki
+                        from(select ambar_id, sum(toplam) girenToplamMalzemeTutari
+                                from hareket
+                                where turu = 'giris'
+                                group by ambar_id) gi,
+                            (select ambar_id, sum(toplam) cikanToplamMalzemeTutari
+                                from hareket
+                                where turu = 'cikis'
+                                group by ambar_id) ci
+                        where gi.ambar_id= ci.ambar_id
+                        and am.ambar_id= ci.ambar_id)
+--Sorumlu atanmamış, giriş hareketi olan ancak çıkış hareketi olmayan ambarları silen
+-- kodu yazınız.
+
+select * from hareket where ambar_id in (
+select Ambar_id from ambar a where sorumlu_id is null) and turu!='cikis';
+
+select * from ambar
+
+where
+ambar_id not in (select distinct ambar_id
+                        from hareket
+                        where turu = 'cikis')
+                        
+--a. İşleri veren kişileri işin numarası ve
+-- maliyetiyle birlikte listeleyiniz.
+
+select p.*,is_no,maliyet from personel p , gorev g , isler i
+where  p.peronsel_id=g.veren_id 
+and    g.gorevid=i.gorevid 
+
+
+
+--b. İlleri, kaç adet görev yapıldığına göre
+--çoktan aza sıralayınız.
+
+select count(gorevid) adet from peronsel p , gorev g 
+where p.peronsel_id=g.veren_id group by aders_il order by adet 
+
+
+--c. Verdiği herhangi bir görevdeki işlerin
+--toplam maliyeti 100 TL’yi aşan kişileri
+--bulunuz.
+select * from peronsel , gorev (
+select  gorevid gid ,sum(maliyet) from  gorev g, isler i 
+where g.gorevid=i.gorevid  group by gorevid having  sum(maliyet)>100 ) gorevd
+) where gorevd.id=gorev.goreid and gorev.veren_id=peronsel_id
+
+
+--d. Aldığı görevlerdeki işlerin toplam
+--maliyeti verdiği görevlerinkinden az
+-- olan kişileri bulunuz.
+SELECT * FROM personel WHERE personel_id IN
+(SELECT alan_id FROM
+(SELECT alan_id,SUM(maliyet) tutar
+FROM gorev g, isler i
+WHERE g.gorev_id=i.gorev_id
+GROUP BY alan_id) alan,
+(SELECT veren_id,SUM(maliyet) tutar
+FROM gorev g, isler i
+WHERE g.gorev_id=i.gorev_id
+GROUP BY veren_id) veren
+WHERE alan.alan_id=veren.veren_id
+AND alan.tutar>veren.tutar)
+
+--e. İstanbul’da verilmiş ve tüm işleri
+--kapanmış görevlerin durumunu kapalı
+--olarak UPDATE eden kodu yazınız.
+update gorev 
+set durum='kapali' where gorev_id in (
+select  g.goreid from  peronsel p ,gorev g , isler i 
+where p.peronsel_id=g.veren_id
+and g.goreid=i.gorev_id
+and aders_il='istanbul'
+i.durum='kapali')
+
+
+UPDATE gorev
+SET durum='Kapalı'
+WHERE veren_id IN (SELECT personel_id
+FROM personel
+WHERE adres_il='İstanbul')
+ AND gorev_id NOT IN (SELECT gorev_id
+ FROM isler
+ WHERE durum!='Kapalı')
