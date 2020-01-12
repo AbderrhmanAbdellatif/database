@@ -1,0 +1,9 @@
+CREATE OR REPLACE 
+PACKAGE DEPT_PACK AS 
+
+  FUNCTION get_dept_name (p_dept_id IN NUMBER)
+  RETURN VARCHAR2;
+
+END DEPT_PACK;
+
+SELECT * FROM departments
