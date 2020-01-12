@@ -247,4 +247,27 @@ end per;
 select per.get_peronsel_sayi(d.department_id) from hr.departments d;
 select per.get_peronsel_name(k.employee_id) isimler from kisi k ;
 select * from kisi;
+------------------------------------------------------------------------
+create or replace procedure emp_up(
+  p_emp_id in number,
+  p_salary in number,
+  p_hatali out varchar2,
+  p_update_number out number ) as 
+begin
+ p_hatali:='hatali';
+ update  kisi 
+ set salary=p_salary
+ where employee_id=p_emp_id;
+ p_hatali:='islem tamam';
+ p_update_number:= sql%rowcount;
+end emp_up;
 
+declare 
+   sounc varchar2(70);
+   p_kayit_Sayisi number;
+begin
+  emp_up(100,500,sounc,p_kayit_Sayisi);
+  DBMS_OUTPUT.PUT_LINE(sounc ||' '||p_kayit_sayisi);
+end;
+  
+select * from kisi;
