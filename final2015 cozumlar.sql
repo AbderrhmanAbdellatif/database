@@ -56,7 +56,34 @@ mus_urun ← (σ a.urun_id=’kalem’(ρ a(alis)  a.musteri_id=s.musteri_id ρ 
 b-Maliyet olarak toplamda aldığından fazla mal satan müşterilerin isimlerini listeleyiniz
  A = γ muster_id;sum(fiyat * adet) -> toplam_alis (Alis)
 B = γ muster_id;sum(fiyat * adet) -> toplam_satis (satis)
-π adi,soyadi(σ A.muster_id=B_muster_id and A.toplam_alis<B.toplamsatis and muster.muster_id=B.msuter.id (A ⨝ B ⨝ muster))
+π adi,soyadi(σ A.muster_id=B_muster_id and A.toplam_alis<B.toplamsatis and
+   muster.muster_id=B.msuter.id (A X B X muster))
 
 
+2.normal forma uygun hal
+personel No,birim,unvan -> calisma sure ,izin turu ,izin sure
+izin turu -> urvan 
+izin turu -> izin sure
+personel No -> calisma sure
 
+3.NF
+personel No,birim,unvan -> izin turu ,izin sure
+izin turu -> urvan 
+izin turu -> izin sure
+personel No -> calisma sure
+4.NF
+personel No,birim -> izin turu
+izin turu -> urvan 
+izin turu -> izin sure
+personel No -> calisma sure
+
+Aşağıdaki analize uygun veri modelini yazınız. 
+Bir personel devam kontrol sistemi tasarlanacaktır. Analiz Maddeleri
+ a. Personel farklı binalarda çalışabilir.
+ b. Personelin hangi turnikeden giriş çıkış yaptığı saklanacaktır. 
+ c. Turnikenin türü önemlidir. Ve kodlanarak saklanmalıdır. 
+ d. Her personel girişi için bir çıkış olmalıdır. 
+ e. Bir personel ancak kendi çalıştığı bir binadan giriş çıkış yapabilir. 
+ f. Personelin binaya giriş ve çıkışında yanında misafir varsa
+   bunların ayrı ayrı isimleri saklanmalıdır. 
+ 
