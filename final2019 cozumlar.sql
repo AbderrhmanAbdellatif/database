@@ -35,6 +35,21 @@
 	   (select satis_id ,sum(odeme) toplam  from takist_odeme 
 	   group by  satis_id) taksitödemesi
 	  
-	   where taksitödemesi.satis_id=taksitödemesi.satis_id
+	   where taksitödemesi.satis_id=toplamsatis.satis_id
 	   and taksitödemesi.toplam=toplamsatis.fiyat
+	   
+	   ( ilişkisel EMIN DEGILIM)
+	   A=(ρ m(musteri) m.musteri_id=us.musteri_id X ρ us(urunsatis) )
+       B=(γ sum(odeme)->toplam (takist_odeme))
+       C=AXC
+       D=σ(A.satis_id=B.satis_id and  σ B.toplam = A.fiyat (C))
+       π m.aders_il D
+
+     4. Ürün satın almasına rağmen ödeme yapmamış
+        kişileri SQL bulunuz 	
+		
+   	    select m.musteri_id from  musteri m , urunsatis us  
+        m.musteri_id=us.musteri_id and us.toplama_odeme=0
+	  
+
 	   
