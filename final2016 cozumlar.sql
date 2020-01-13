@@ -29,7 +29,7 @@ a. Toplam geliri 100 TL üzerindeki müşterilerin
  c. Toplam gelir alanı siparişlerden
   kazanılan toplam tutara uymayan müşterileri bulunuz
   
-  select * from muster m ,siparis satırda
+  select * from muster m ,siparis s
   where s.musteri_id=m.musteri_id group by  musteri_id
   having sum(adet*satis_fiyat)!=m.toplam_gelir
   
