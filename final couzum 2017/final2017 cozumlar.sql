@@ -22,3 +22,9 @@ oluşturulamaz. Hangi kayıtların silişkili olduğu bilgisi
      ,birincil anahtarların aynı yapılması veya kodlamayla çözülebilir
  	 
 2. (33) Aşağıdaki soruları verilen veri modeli göre cevaplandırınız
+a. (6) 2015 yılında ‘İstanbul’daki bir şubeden 
+     kalem alan müşterilerin adı ve soyadını bulunuz. 
+	 select adi,soyadi from sube s , fatura f , muster m 
+	 s.s_id=f.s_id and s.aders_il='istanbul' and 
+	 f.tarih=2015 and f.m_id=m.m_id 
+	 
