@@ -28,4 +28,15 @@
 (14) Borcu olmayan (taksit ödemesi toplama eşit) müşterilerin yaşadıkları
      şehirleri İlişkisel Cebirle ve SQL ile gösteriniz.	
 	 
-	 3)select * from musteri m , 
+	 3)select m.aders_il from 
+	   (select  satis_id ,sum(fiyat) toplam from musteri m , urunsatis us 
+	   where m.musteri_id=us.musteri_id 
+	   group by satis_id) toplamsatis
+	   ,
+	   (select satis_id ,sum(odeme) toplam  from takist_odeme 
+	   group by  satis_id) taksitödemesi
+	   ,musteri m 
+	   where taksitödemesi.satis_id=taksitödemesi.satis_id
+	   and taksitödemesi.toplam=toplamsatis.toplam 
+	   and toplamsatis.musteri_id=m.musteri_id
+	   
