@@ -50,6 +50,21 @@
 		
    	    select m.musteri_id from  musteri m , urunsatis us  
         m.musteri_id=us.musteri_id and us.toplama_odeme=0
-	  
-
+7. (15) Aşağıdaki analize uygun ilişkisel veri modelini çiziniz. 
+       Bir izin takip sistemi tasarlanacaktır.
+	   Kişiler çalışma sürelerine göre yıllık, ücretsiz gibi 
+	   farklı türlerde izin hakkı kazanmaktadır.
+	   Kişiler ancak hak kazandıkları türde izin kullanabilir. 
+	   Kişilerin İzni geçirdikleri adresler takip etmektedir.
+	   İzin alma süreci izin talebi ile başlamaktadır.
+	   Birim amiri ve genel müdür
+       gibi çeşitli onaylardan geçen talep izne dönüşür.  
 	   
+8.İkinci soruda verilen modeli kullanarak grup ve küme operatörü 
+       kullanmadan, yaptığı tüm satın almalardaki tüm taksitini ödeyen 
+	   müşterilerin durumunu borçsuz 
+       olarak update eden PL/SQL kodu yazınız. 
+	   
+9. (7) Herhangi bir taksiti ödenmiş bir satış işlemini 
+       değiştirmeyi ve silmeyi engelleyen bir 
+       tablo trigger PLSQL kodunu yazınız.  	   
