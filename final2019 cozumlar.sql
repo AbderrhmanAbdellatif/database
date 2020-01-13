@@ -72,7 +72,7 @@
 	   us.satis_id=t.satis_id;
 	   toplamtakst number;
 	   temp_fiyat number;
-	   temp_mus_id c_muster%rowtype;
+	   temp_mus_id c_muster.satis_id%type;
 	   begin
 	   for r1 in c_muster loop
 	    for r2 in c_muster loop
@@ -95,4 +95,22 @@
 	   
 9. (7) Herhangi bir taksiti ödenmiş bir satış işlemini 
        değiştirmeyi ve silmeyi engelleyen bir 
-       tablo trigger PLSQL kodunu yazınız.  	   
+       tablo trigger PLSQL kodunu yazınız. 
+    
+	CREATE OR REPLACE TRIGGER satış_işlemi
+    AFTER DELETE OR UPDATE ON urunsatis 
+    FOR EACH ROW
+   DECLARE
+    urun_sayi NUMBER;
+	urun_silinmis_sayisi number;
+   BEGIN
+    urun_sayici:=urun_paket.get_gunceleme_urun(:new.satis_id);
+    urun_silinmis_sayisi:=urun_paket._urun(:new.satis_id);
+	
+    IF (urun_sayici>3) THEN
+        RAISE_APPLICATION_ERROR(-20101,'fazla urun uzerene degisiklik yapmazsin.');
+    END IF;
+	IF (urun_silinmis_sayisi>3) THEN
+        RAISE_APPLICATION_ERROR(-20101,'fazla urun silmezsiniz.');
+    END IF;
+END; 	   
