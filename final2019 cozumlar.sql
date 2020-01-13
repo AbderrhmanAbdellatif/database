@@ -65,6 +65,34 @@
 	   müşterilerin durumunu borçsuz 
        olarak update eden PL/SQL kodu yazınız. 
 	   
+	   DECLARE
+	   cursor c_muster is select * from
+	   musteri m , urunsatis us , taksitödeme t 
+	   where m.musteri_id=us.musteri_id and 
+	   us.satis_id=t.satis_id;
+	   toplamtakst number;
+	   temp_fiyat number;
+	   temp_mus_id c_muster%rowtype;
+	   begin
+	   for r1 in c_muster loop
+	    for r2 in c_muster loop
+         if(r1.satis_id=r2.satis_id) then
+            temp_fiyat=r1.fiyat;		 
+	        for r3 in c_muster loop
+			if(r2.satis_id=r3.satis_id) then
+			 toplamtakst=r3.odeme
+			 end loop;
+			 temp_mus_id=musteri_id;
+		end loop;
+        if toplamtakst=temp_fiyat then 
+           update musteri set durum='Borçsuz'
+		    where musteri_id=temp_mus_id;
+		end if ;
+       toplamtakst :=0;
+	   temp_fiyat :=0;
+	   end loop;	
+		(emin degilim )	 
+	   
 9. (7) Herhangi bir taksiti ödenmiş bir satış işlemini 
        değiştirmeyi ve silmeyi engelleyen bir 
        tablo trigger PLSQL kodunu yazınız.  	   
