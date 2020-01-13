@@ -1,0 +1,34 @@
+Grade_report(StudNo,StudName,(Major,Adviser,
+ (CourseNo,Ctitle,InstrucName,InstructLocn,Grade)))
+ 
+ Functional dependencies 
+ StudNo -> StudName
+ CourseNo -> Ctitle,InstrucName
+ InstrucName -> InstrucLocn
+ StudNo,CourseNo,Major -> Grade
+ StudNo,Major -> Advisor
+ Advisor -> Major
+ 
+ Unnormalised 
+Grade_report(StudNo,StudName,(Major,Advisor,
+ (CourseNo,Ctitle,InstrucName,InstructLocn,Grade)))
+ 
+1NF Remove repeating groups 
+ 
+studnet -> (StudNo,StudName)
+studnetMajor -> (StudNo,StudName,Major,Advisor)
+studnetcorse -> (StudNo,StudName,Major,Advisor,
+ (CourseNo,Ctitle,InstrucName,InstructLocn,Grade)
+ 
+2NF Remove partial key dependencies 
+Student(StudNo,StudName)
+StudMajor(StudNo,Major,Advisor)
+StudCourse(StudNo,Major,CourseNo,Grade)
+Course(CourseNo,Ctitle,InstrucName,InstructLocn)
+
+3NF Remove transitive dependencies 
+Student(StudNo,StudName)
+StudMajor(StudNo,Major,Advisor)
+StudCourse(StudNo,Major,CourseNo,Grade)
+Course(CourseNo,Ctitle,InstrucName)
+Instructor(InstructName,InstructLocn
