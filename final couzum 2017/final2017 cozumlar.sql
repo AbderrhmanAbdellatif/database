@@ -85,7 +85,28 @@ müşteri_id, satis_id -> malzeme_id, tarih
 malzeme_id,tarih -> tutar 
 müşteri_id,malzeme_id, mağaza_id -> tutar
 
-6. (15) Aşağıdaki analize uygun ilişkisel veri modelini çiziniz. Bir inşaat takip sistemi tasarlanacaktır.
-        Şirket binalar yapmaktadır. Bunlarla ilgili maliyet, bina alanı ve adres bilgilerini takip etmektedir. 
-		Bir binada sıva, boya gibi farklı türlerde görevler yapılmaktadır. Her görev ayrı ayrı takip edilmektedir. Çalışanlar görev türüne  göre çeşitli ekiplerde görevlendirmektedir. Her çalışan sadece bir ekipte görev yapabilir. Bir ekip aynı tarihte iki göreve birden başlayamaz. Ancak farklı tarihlerde farklı binalarda çalışabilmektedir.
-         Her inşaatın ve görevin başlangıç bitiş tarihi bulunmaktadır.
+6.Aşağıdaki analize uygun ilişkisel veri modelini çiziniz. Bir inşaat takip sistemi tasarlanacaktır.
+  Şirket binalar yapmaktadır. Bunlarla ilgili maliyet, bina alanı ve adres bilgilerini takip etmektedir. 
+  Bir binada sıva, boya gibi farklı türlerde görevler yapılmaktadır.
+  Her görev ayrı ayrı takip edilmektedir. Çalışanlar görev türüne  
+  göre çeşitli ekiplerde görevlendirmektedir. Her çalışan sadece bir ekipte görev yapabilir. Bir ekip aynı tarihte iki göreve birden başlayamaz. Ancak farklı tarihlerde farklı binalarda çalışabilmektedir.
+  Her inşaatın ve görevin başlangıç bitiş tarihi bulunmaktadır.
+7-    İkinci soruda verilen modelde müşteri adı bazında toplam alış tutarını 
+       grup fonksiyonu kullanmadan  ekrana yazdıran bir
+       PL/SQL kodu yazınız. Yazdırmak için DBMS_OUTPUT.PUT_LINE kullanılabili
+	
+7)  declare 
+    cursor c1 is select m.musteriId,m.adi,tutar
+    from musteri m, alis a where m.musteri_id=a.musteri_id ;
+    toplamalis PLS_INTEGER;
+   	begin
+	for r1 in c1 loop
+       for r2 in r1 loop 
+          if (r1.musteriId=r2.musteriId) then
+               toplamalis=toplamalis+tutar;
+		  end if 
+        end loop;
+		DBMS_OUTPUT.PUT_LINE(r1.adi||toplamalis);
+		toplamalis:=0;
+	end loop;
+    end;	
