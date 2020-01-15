@@ -42,7 +42,8 @@ c. Toplam gelir alanı siparişlerden
 	(select musteri_id ,sum(adet*satis_fiyat) 
 	toplam from musteri m , siparis s 
 	where m.musteri_id=s.musteri_id group by musteri_id
-	)müşterileri_toplam_sipariş where 
+	)müşterileri_toplam_sipariş 
+	where 
 	müşterileri_toplam_sipariş.musteri_id=İlk_müşterisinin_toplam_sipariş.musteri_id
 	and müşterileri_toplam_sipariş.toplam>İlk_müşterisinin_toplam_sipariş.toplam
 	

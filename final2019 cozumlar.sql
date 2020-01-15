@@ -50,6 +50,7 @@
 		
    	    select m.musteri_id from  musteri m , urunsatis us  
         m.musteri_id=us.musteri_id and us.toplama_odeme=0
+		
 7. (15) Aşağıdaki analize uygun ilişkisel veri modelini çiziniz. 
        Bir izin takip sistemi tasarlanacaktır.
 	   Kişiler çalışma sürelerine göre yıllık, ücretsiz gibi 
